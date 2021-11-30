@@ -3,7 +3,7 @@ package filosofos;
 public class DiningPhilosopher {
 
 	public synchronized void grabForks(Fork leftFork, Fork rightFork) throws InterruptedException {
-		//If both forks aren't avaliable we wait for them to be
+		//If both forks aren't available we wait for them to be
 		while (!leftFork.avaliable || !rightFork.avaliable) {
 			wait();
 		}
