@@ -2,34 +2,32 @@ package broker;
 
 public class Broker {
 	
-	private int maxSharesToSell;
+	private final int maxSharesToSell;
+	private int availableShares;
 	
 	public Broker(int _maxSharesToSell) {
 		maxSharesToSell = _maxSharesToSell;
+		availableShares = maxSharesToSell;
 	}
 	
 	public synchronized boolean buy(int _sharesToBuy) {
-
-		System.out.printf("There are %d shares avaliable", maxSharesToSell);
-		if (_sharesToBuy < maxSharesToSell) {
-			maxSharesToSell-= _sharesToBuy;
-			notify();
-			System.out.printf("There are %d shares remaining", maxSharesToSell);
+		System.out.printf("There are %d shares avaliable\n", availableShares);
+		//if sharesToBuy < maxSharesToSell then we update the number of available shares and notify all the threads that we are over with buying process
+		if (_sharesToBuy <= availableShares) {
+			availableShares-= _sharesToBuy;
+			System.out.printf("There are %d shares remaining\n", availableShares);
+			notifyAll();
 			return true;
 		}
 		else {
-			notify();
+			notifyAll();
 			return false;
 		}
 	}
 	
-	public synchronized void waitUntilNoSharesAvaliable() {
-		if (maxSharesToSell > 0) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+	public synchronized void waitUntilNoSharesAvaliable() throws InterruptedException {
+		while (availableShares > 0) {
+			wait();
 		}
 	}
 }
